@@ -197,6 +197,20 @@ npm install
 npm run check
 ```
 
+## 发布
+
+仓库维护者可以先更新 `package.json` 版本并提交，然后推送与版本一致、以 `v` 开头
+的 Git 标签：
+
+```sh
+npm version patch
+git push origin main --follow-tags
+```
+
+发布流水线会校验标签、运行完整检查、通过 provenance 发布 npm 包，并创建包含软件包
+压缩文件的 GitHub Release。首次发布前，需要在 GitHub 仓库中添加名为
+`NPM_TOKEN` 的 npm automation token Secret。
+
 ## 安全说明
 
 插件只会请求每个 Provider 配置的模型接口。运行时 `apiKey` 仅用于请求，写入磁盘

@@ -5,6 +5,14 @@
   "type": "module",
   "license": "MIT",
   "author": "Sanm",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanm00/opencode-model-sync.git"
+  },
+  "homepage": "https://github.com/sanm00/opencode-model-sync#readme",
+  "bugs": {
+    "url": "https://github.com/sanm00/opencode-model-sync/issues"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -206,6 +206,21 @@ npm install
 npm run check
 ```
 
+## Release
+
+Repository maintainers can publish a version by updating `package.json`,
+committing the change, and pushing a matching `v`-prefixed tag:
+
+```sh
+npm version patch
+git push origin main --follow-tags
+```
+
+The release workflow verifies the tag, runs the complete check suite, publishes
+the package to npm with provenance, and creates a GitHub Release containing the
+package tarball. Add an npm automation token as the repository secret
+`NPM_TOKEN` before the first release.
+
 ## Security
 
 The plugin requests only each configured provider's model endpoint. It uses the
