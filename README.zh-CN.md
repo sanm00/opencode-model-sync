@@ -2,6 +2,12 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
+[![CI](https://github.com/sanm00/opencode-model-sync/actions/workflows/ci.yml/badge.svg)](https://github.com/sanm00/opencode-model-sync/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/opencode-model-sync.svg)](https://www.npmjs.com/package/opencode-model-sync)
+[![npm downloads](https://img.shields.io/npm/dm/opencode-model-sync.svg)](https://www.npmjs.com/package/opencode-model-sync)
+[![Node.js](https://img.shields.io/node/v/opencode-model-sync.svg)](https://www.npmjs.com/package/opencode-model-sync)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 从 OpenAI 兼容 Provider 的 `GET /models` 接口同步模型列表到 OpenCode。
 
 ## 功能特性
