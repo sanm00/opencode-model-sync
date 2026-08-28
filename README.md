@@ -208,19 +208,28 @@ as a warning and left unchanged.
 ## Development
 
 ```sh
-npm install
-npm run check
+make install
+make check
 ```
+
+Run `make help` to list the available development and release targets.
 
 ## Release
 
-Repository maintainers can publish a version by updating `package.json`,
-committing the change, and pushing a matching `v`-prefixed tag:
+Repository maintainers can release a patch, minor, or major version with one
+command:
 
 ```sh
-npm version patch
-git push origin main --follow-tags
+make release-patch
+make release-minor
+make release-major
 ```
+
+The release target requires a clean `main` branch and an `origin` remote. It
+fetches `origin/main`, refuses to release when the local branch is behind or
+diverged, runs the complete check suite, creates the npm version commit and
+matching `v` tag, then pushes `main` and the tag. Pushing the tag starts the
+GitHub Release workflow.
 
 The release workflow verifies the tag, runs the complete check suite, publishes
 the package to npm with provenance, and creates a GitHub Release containing the

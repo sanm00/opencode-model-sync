@@ -199,19 +199,26 @@ TUI 入口：
 ## 开发
 
 ```sh
-npm install
-npm run check
+make install
+make check
 ```
+
+运行 `make help` 可以查看所有开发和发布命令。
 
 ## 发布
 
-仓库维护者可以先更新 `package.json` 版本并提交，然后推送与版本一致、以 `v` 开头
-的 Git 标签：
+仓库维护者可以通过一条命令发布 patch、minor 或 major 版本：
 
 ```sh
-npm version patch
-git push origin main --follow-tags
+make release-patch
+make release-minor
+make release-major
 ```
+
+发布目标要求当前位于干净的 `main` 分支，并且已配置 `origin`。它会获取
+`origin/main`，在本地分支落后或分叉时终止发布，然后运行完整检查、创建 npm 版本
+提交和对应的 `v` 标签，最后推送 `main` 和标签。标签推送后会触发 GitHub Release
+流水线。
 
 发布流水线会校验标签、运行完整检查、通过 provenance 发布 npm 包，并创建包含软件包
 压缩文件的 GitHub Release。首次发布前，需要在 GitHub 仓库中添加名为
