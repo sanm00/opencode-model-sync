@@ -4,6 +4,8 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     tui: "src/tui.tsx",
+    cli: "src/cli.ts",
+    installer: "src/installer.ts",
   },
   format: ["esm"],
   dts: true,

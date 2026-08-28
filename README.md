@@ -1,5 +1,7 @@
 # opencode-model-sync
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 Keep models for OpenAI-compatible OpenCode providers in sync with their
 `GET /models` endpoints.
 
@@ -22,8 +24,84 @@ Keep models for OpenAI-compatible OpenCode providers in sync with their
 
 ## Install
 
-After the package is published to npm, add the server plugin to
-`opencode.json`:
+### Install with an AI coding assistant
+
+Paste this prompt into OpenCode, Claude Code, Codex, or another coding agent:
+
+```text
+Install opencode-model-sync for my global OpenCode configuration.
+
+1. Run `npx opencode-model-sync install`.
+2. Verify that the server plugin `opencode-model-sync` is present in the global
+   `opencode.json` or `opencode.jsonc` plugin array.
+3. Verify that `opencode-model-sync/tui` is present in the global `tui.json`
+   plugin array.
+4. Preserve all existing configuration, plugins, and JSONC comments. Do not
+   replace either config file wholesale.
+5. Validate both config files after editing and report exactly which files were
+   changed.
+6. Do not publish packages, commit changes, or remove existing plugins.
+7. Remind me to restart OpenCode when installation is complete.
+```
+
+### Local installation
+
+Clone the repository into OpenCode's global plugin directory, then install the
+dependencies and build it:
+
+```sh
+mkdir -p ~/.config/opencode/plugins
+git clone <repository-url> ~/.config/opencode/plugins/opencode-model-sync
+cd ~/.config/opencode/plugins/opencode-model-sync
+npm install
+npm run build
+```
+
+Add the built server entry to `~/.config/opencode/opencode.json`. Replace the
+example with the actual absolute path for your home directory:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "/Users/your-name/.config/opencode/plugins/opencode-model-sync/dist/index.js"
+  ]
+}
+```
+
+To enable the optional TUI integration, add the built TUI entry to
+`~/.config/opencode/tui.json`:
+
+```json
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "plugin": [
+    "/Users/your-name/.config/opencode/plugins/opencode-model-sync/dist/tui.js"
+  ]
+}
+```
+
+Restart OpenCode after changing either configuration file. To update a local
+installation later, pull and rebuild it:
+
+```sh
+cd ~/.config/opencode/plugins/opencode-model-sync
+git pull
+npm install
+npm run build
+```
+
+### npm installation
+
+After the package is published to npm, install both the server and TUI entries
+with one command:
+
+```sh
+npx opencode-model-sync install
+```
+
+The command creates the global OpenCode config files when needed, preserves
+existing plugins and JSONC comments, and adds these entries:
 
 ```json
 {
@@ -32,14 +110,22 @@ After the package is published to npm, add the server plugin to
 }
 ```
 
-To use a local checkout before publishing, run `npm install && npm run build`
-in this repository and reference the absolute build path instead:
-
 ```json
 {
-  "plugin": ["/absolute/path/to/opencode-model-sync/dist/index.js"]
+  "$schema": "https://opencode.ai/tui.json",
+  "plugin": ["opencode-model-sync/tui"]
 }
 ```
+
+It is safe to run the installer more than once. Use a custom OpenCode config
+directory when necessary:
+
+```sh
+npx opencode-model-sync install --config-dir /absolute/path/to/opencode
+```
+
+Restart OpenCode after installation. You can still add the package entries
+manually if you do not want `npx` to edit the config files.
 
 The default config path is resolved in this order:
 
@@ -62,9 +148,10 @@ and project configuration before invoking plugins:
 }
 ```
 
-## Optional TUI
+## TUI
 
-Add the TUI entry to `tui.json`:
+The one-command npm installer enables the TUI entry automatically. For a manual
+npm installation, add it to `tui.json`:
 
 ```json
 {
@@ -72,8 +159,6 @@ Add the TUI entry to `tui.json`:
   "plugin": ["opencode-model-sync/tui"]
 }
 ```
-
-For a local checkout, use the absolute path to `dist/tui.js`.
 
 Run `/model-sync` to select one provider or all providers. The latest result is
 shown centered immediately below the home prompt and disappears after one
