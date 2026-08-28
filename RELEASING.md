@@ -1,65 +1,71 @@
-# 发布指南
+# Release Guide
 
-本文档供 `opencode-model-sync` 仓库维护者使用，介绍如何通过 Make 和 GitHub
-Actions 发布 npm 包及 GitHub Release。
+[English](RELEASING.md) | [简体中文](RELEASING.zh-CN.md)
 
-## 发布架构
+This guide is for `opencode-model-sync` maintainers. It explains how to publish
+the npm package and GitHub Release with Make and GitHub Actions.
 
-发布由本地 Make 命令和 GitHub Actions 共同完成：
+## Release Architecture
 
-1. 本地 Make 命令检查仓库状态、运行测试、更新版本并创建 Git 标签。
-2. Make 将 `main` 分支和标签推送到 GitHub。
-3. `.github/workflows/release.yml` 被 `v*` 标签触发。
-4. Release 工作流再次校验版本并运行完整检查。
-5. 工作流将包发布到 npm，并创建包含 `.tgz` 文件的 GitHub Release。
+Local Make commands and GitHub Actions share the release process:
 
-本地命令不会直接执行 `npm publish`。npm 发布只在 GitHub Actions 中进行。
+1. A local Make command checks the repository, runs tests, updates the version,
+   and creates a Git tag.
+2. Make pushes `main` and the tag to GitHub.
+3. A `v*` tag triggers `.github/workflows/release.yml`.
+4. The Release workflow verifies the version and runs the complete check suite
+   again.
+5. The workflow publishes the package to npm and creates a GitHub Release that
+   contains the `.tgz` package.
 
-## 首次配置
+Local commands never run `npm publish`. Publishing to npm happens only in
+GitHub Actions.
+
+## Initial Setup
 
 ### npm Token
 
-在 npm 创建 Automation Token，然后将其添加为 GitHub Actions Secret：
+Create an npm Automation Token and add it as a GitHub Actions secret:
 
-1. 打开 GitHub 仓库的 `Settings`。
-2. 进入 `Secrets and variables` > `Actions`。
-3. 点击 `New repository secret`。
-4. 名称填写 `NPM_TOKEN`。
-5. 值填写 npm Automation Token。
+1. Open the GitHub repository `Settings`.
+2. Go to `Secrets and variables` > `Actions`.
+3. Click `New repository secret`.
+4. Enter `NPM_TOKEN` as the name.
+5. Enter the npm Automation Token as the value.
 
-不要将 Token 写入仓库、`.npmrc`、日志或 Release 文件。
+Never write the token to the repository, `.npmrc`, logs, or release files.
 
-### GitHub Actions 权限
+### GitHub Actions Permissions
 
-仓库需要允许 GitHub Actions 创建 Release。打开：
+The repository must allow GitHub Actions to create releases. Open:
 
 ```text
 Settings > Actions > General > Workflow permissions
 ```
 
-流水线已声明最小权限：
+The workflow declares only the permissions it needs:
 
-- `contents: write`：创建 GitHub Release。
-- `id-token: write`：生成 npm provenance。
+- `contents: write` creates the GitHub Release.
+- `id-token: write` generates npm provenance.
 
-### npm 包名
+### npm Package Name
 
-首次发布前确认 `opencode-model-sync` 在 npm 上仍然可用，并确认当前 npm 账号有权
-发布该包名。
+Before the first release, verify that `opencode-model-sync` is still available
+on npm and that the npm account can publish that package name.
 
-## 发布前检查
+## Pre-release Checks
 
-发布前应确认：
+Before releasing, confirm that:
 
-- 当前分支是 `main`。
-- 所有预期改动都已经提交。
-- Git 工作区为空。
-- `origin` 指向正确的 GitHub 仓库。
-- CI 已通过。
-- `package.json`、README 和变更内容一致。
-- 没有凭据、状态文件或本地路径被包含在发布包中。
+- The current branch is `main`.
+- All intended changes are committed.
+- The Git working tree is clean.
+- `origin` points to the correct GitHub repository.
+- CI has passed.
+- `package.json`, the README files, and the changes agree.
+- The package contains no credentials, status files, or local paths.
 
-可手动执行：
+You can run these checks manually:
 
 ```sh
 make check
@@ -67,24 +73,25 @@ npm pack --dry-run
 git status --short
 ```
 
-## 版本选择
+## Choosing a Version
 
-项目遵循语义化版本：
+The project follows Semantic Versioning:
 
-| 命令 | 示例 | 适用场景 |
+| Command | Example | Use when |
 | --- | --- | --- |
-| `make release-patch` | `0.1.0` -> `0.1.1` | Bug 修复、文档修正、兼容性优化。 |
-| `make release-minor` | `0.1.0` -> `0.2.0` | 新增向后兼容的功能或配置。 |
-| `make release-major` | `0.1.0` -> `1.0.0` | 包含不兼容的 API、配置或行为变更。 |
+| `make release-patch` | `0.1.0` -> `0.1.1` | Fixing bugs or documentation without breaking compatibility. |
+| `make release-minor` | `0.1.0` -> `0.2.0` | Adding backward-compatible features or configuration. |
+| `make release-major` | `0.1.0` -> `1.0.0` | Shipping incompatible API, configuration, or behavior changes. |
 
-如果不确定，应优先选择 patch。不要为了重新执行失败的流水线而提升版本。
+When uncertain, prefer a patch release. Do not increment the version merely to
+retry a failed workflow.
 
-## 首次发布
+## First Release
 
-如果 `package.json` 已经是计划发布的版本，例如 `0.1.0`，首次发布不需要再运行
-`make release-patch`，否则版本会变成 `0.1.1`。
+If `package.json` already contains the version you intend to publish, such as
+`0.1.0`, do not run `make release-patch`; that would change it to `0.1.1`.
 
-先确保本地提交已经推送，然后创建与当前版本一致的标签：
+Push the current commit, then create a tag that matches the current version:
 
 ```sh
 git push origin main
@@ -92,11 +99,11 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-标签推送后，GitHub Release 工作流会自动发布 `0.1.0`。
+Pushing the tag starts the GitHub Release workflow and publishes `0.1.0`.
 
-## 日常发布
+## Regular Releases
 
-根据变更类型选择一个命令：
+Choose one command according to the type of change:
 
 ```sh
 make release-patch
@@ -104,42 +111,43 @@ make release-minor
 make release-major
 ```
 
-Makefile 会依次执行：
+The Makefile performs these steps in order:
 
-1. 校验版本类型。
-2. 确认当前分支为 `main`。
-3. 确认工作区干净。
-4. 确认已配置 `origin`。
-5. 获取 `origin/main`。
-6. 检查本地分支没有落后或与远程分叉。
-7. 执行 `npm run check`。
-8. 通过 `npm version` 更新 `package.json` 和 `package-lock.json`。
-9. 创建版本提交和对应的 `v` 标签。
-10. 推送 `main` 和标签。
+1. Validates the version increment.
+2. Confirms that the current branch is `main`.
+3. Confirms that the working tree is clean.
+4. Confirms that `origin` is configured.
+5. Fetches `origin/main`.
+6. Ensures that the local branch is not behind or diverged from the remote.
+7. Runs `npm run check`.
+8. Uses `npm version` to update `package.json` and `package-lock.json`.
+9. Creates the version commit and matching `v` tag.
+10. Pushes `main` and the tag.
 
-例如：
+For example:
 
 ```sh
 make release-patch
 ```
 
-成功后，在 GitHub Actions 页面观察 `Release` 工作流，直到 npm 发布和 GitHub
-Release 创建完成。
+After the command succeeds, monitor the `Release` workflow in GitHub Actions
+until npm publishing and GitHub Release creation finish.
 
-## 手动触发流水线
+## Manual Workflow Dispatch
 
-Release 工作流支持在 GitHub Actions 页面手动运行，但只能发布已经存在的标签：
+The Release workflow can be started manually in GitHub Actions, but it can only
+publish an existing tag:
 
-1. 打开 `Actions` > `Release`。
-2. 点击 `Run workflow`。
-3. 输入已有的 `v` 前缀标签，例如 `v0.1.0`。
+1. Open `Actions` > `Release`.
+2. Click `Run workflow`.
+3. Enter an existing `v`-prefixed tag, such as `v0.1.0`.
 
-工作流会验证标签与 `package.json` 版本完全一致。手动触发不会自动创建标签或修改
-版本。
+The workflow requires the tag to match the version in `package.json` exactly.
+Manual dispatch does not create a tag or change the package version.
 
-## 发布后验证
+## Post-release Verification
 
-发布完成后检查：
+After the release completes, run:
 
 ```sh
 npm view opencode-model-sync version
@@ -147,54 +155,57 @@ npm view opencode-model-sync dist-tags
 npx opencode-model-sync --help
 ```
 
-同时确认：
+Also confirm that:
 
-- GitHub Release 已创建。
-- Release Notes 内容正确。
-- Release 中包含 npm `.tgz` 文件。
-- npm provenance 信息可见。
-- README 徽章显示正确版本。
+- The GitHub Release exists.
+- The generated release notes are correct.
+- The npm `.tgz` file is attached to the release.
+- npm provenance is visible.
+- The README badges show the correct version.
 
-## 发布失败处理
+## Handling Failures
 
-### 检查或构建失败
+### Checks or Build Fail
 
-如果标签已经推送，修复问题并提交，然后发布新的 patch 版本。不要删除或移动已经
-推送的标签，因为重跑旧标签仍然会检出原来的失败提交。如果标签尚未推送，可以删除
-本地标签，在修复后重新执行正常发布流程。
+If the tag has already been pushed, fix and commit the problem, then publish a
+new patch version. Do not delete or move the pushed tag: rerunning it still
+checks out the original failing commit. If the tag has not been pushed, delete
+the local tag and repeat the normal release process after fixing the problem.
 
-### 标签与版本不一致
+### Tag and Version Do Not Match
 
-流水线要求：
+The workflow requires:
 
 ```text
-标签 v0.1.0 <=> package.json 版本 0.1.0
+tag v0.1.0 <=> package.json version 0.1.0
 ```
 
-仅当错误标签尚未触发公开发布，并且明确需要纠正 Git 历史时，才删除远程错误标签，
-修正版本后创建正确标签：
+Delete an incorrect remote tag only when it has not produced a public release
+and correcting Git history is explicitly necessary:
 
 ```sh
 git push origin :refs/tags/vX.Y.Z
 git tag -d vX.Y.Z
 ```
 
-不要删除已经对应公开 npm 版本的标签。
+Never delete a tag that corresponds to a published npm version.
 
-### npm 发布失败但版本尚未存在
+### npm Publishing Fails Before the Version Exists
 
-确认 `NPM_TOKEN`、npm 权限和包名后，在 GitHub Actions 中使用同一已有标签手动重跑
-Release 工作流。不要创建新版本。
+After correcting `NPM_TOKEN`, npm permissions, or the package name, rerun the
+Release workflow for the same existing tag in GitHub Actions. Do not create a
+new version.
 
-### npm 版本已经存在
+### The npm Version Already Exists
 
-npm 不允许覆盖已发布版本。如果该版本已经存在，必须修复问题后发布新的 patch
-版本。不要尝试覆盖或复用已发布版本号。
+npm does not allow published versions to be overwritten. Fix the problem and
+publish a new patch version instead of attempting to reuse the version number.
 
-## 安全原则
+## Security Principles
 
-- 不在本地直接发布，统一由受控的 GitHub Actions 发布。
-- 不在 Pull Request 流水线中暴露 `NPM_TOKEN`。
-- 不提交 `.npmrc`、Token、Provider API Key 或 `.model-sync-status.json`。
-- 发布前使用 `npm pack --dry-run` 检查软件包内容。
-- 不强制移动已经公开发布的版本标签。
+- Publish only through the controlled GitHub Actions workflow, not locally.
+- Never expose `NPM_TOKEN` to Pull Request workflows.
+- Never commit `.npmrc`, tokens, Provider API keys, or
+  `.model-sync-status.json`.
+- Inspect package contents with `npm pack --dry-run` before releasing.
+- Never force-move a tag for a publicly released version.
