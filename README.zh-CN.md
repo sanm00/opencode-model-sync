@@ -207,6 +207,9 @@ make check
 
 ## 发布
 
+首次配置、版本选择、故障处理和完整检查清单请参阅
+[发布指南](RELEASING.md)。
+
 仓库维护者可以通过一条命令发布 patch、minor 或 major 版本：
 
 ```sh

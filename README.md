@@ -216,6 +216,9 @@ Run `make help` to list the available development and release targets.
 
 ## Release
 
+See the [release guide](RELEASING.md) for initial setup, version selection,
+troubleshooting, and the complete maintainer checklist.
+
 Repository maintainers can release a patch, minor, or major version with one
 command:
 
