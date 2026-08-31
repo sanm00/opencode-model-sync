@@ -13,6 +13,7 @@ const tui: TuiPlugin = async (api, pluginOptions) => {
   const configPath = await resolveConfigPath(options.configPath)
   const statusPath = resolveStatusPath(configPath, options.statusPath)
   const [status, setStatus] = createSignal<SyncStatus>()
+  const [latestStatus, setLatestStatus] = createSignal<SyncStatus>()
   const [syncing, setSyncing] = createSignal(false)
   let hideTimer: ReturnType<typeof setTimeout> | undefined
   let lastUpdatedAt: string | undefined
@@ -20,6 +21,7 @@ const tui: TuiPlugin = async (api, pluginOptions) => {
   function showStatus(next: SyncStatus) {
     if (hideTimer) clearTimeout(hideTimer)
     lastUpdatedAt = next.updatedAt
+    setLatestStatus(next)
     const remaining = STATUS_DURATION - (Date.now() - Date.parse(next.updatedAt))
     if (!Number.isFinite(remaining) || remaining <= 0) {
       setStatus(undefined)
@@ -133,6 +135,25 @@ const tui: TuiPlugin = async (api, pluginOptions) => {
         return (
           <box width="100%" alignItems="center">
             <text fg={status() ? color() : api.theme.current.textMuted}>{text()}</text>
+          </box>
+        )
+      },
+      sidebar_content() {
+        const current = latestStatus()
+        if (!current) return null
+        return (
+          <box flexDirection="column" marginTop={1}>
+            <text fg={api.theme.current.text}>Models</text>
+            <text fg={current.status === "success" ? api.theme.current.success : api.theme.current.warning}>
+              {current.status === "success" ? "Updated successfully" : "Updated with warnings"}
+            </text>
+            {Object.entries(current.providers).map(([providerID, result]) => (
+              <text fg={result.status === "success" ? api.theme.current.textMuted : api.theme.current.warning}>
+                {result.status === "success"
+                  ? `${providerID}: ${result.count ?? 0} models`
+                  : `${providerID}: ${result.message ?? "sync failed"}`}
+              </text>
+            ))}
           </box>
         )
       },

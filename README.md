@@ -168,8 +168,9 @@ npm installation, add it to `tui.json`:
 
 Run `/model-sync` to select one provider or all providers. The latest result is
 shown centered immediately below the home prompt and disappears after one
-minute. Models written in the background are loaded the next time OpenCode
-starts.
+minute. The session sidebar keeps a `Models` section below `Context`, `MCP`,
+and `LSP`, showing the latest model count or failure for each provider. Models
+written in the background are loaded the next time OpenCode starts.
 
 ## Options
 
