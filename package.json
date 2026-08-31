@@ -1,6 +1,6 @@
 {
   "name": "opencode-model-sync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Non-blocking model discovery for OpenAI-compatible OpenCode providers",
   "type": "module",
   "license": "MIT",
