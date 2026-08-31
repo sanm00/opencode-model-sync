@@ -39,9 +39,8 @@ jobs:
       - name: Verify tag matches package version
         run: node -e 'const expected = `v${require("./package.json").version}`; if (process.env.RELEASE_TAG !== expected) { console.error(`Expected tag ${expected}, got ${process.env.RELEASE_TAG}`); process.exit(1) }'
       - run: npm run check
-      - run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish package
+        run: npm publish --access public --provenance
       - run: npm pack --ignore-scripts
       - name: Create GitHub release
         env:
